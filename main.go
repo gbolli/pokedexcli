@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	
+
+	commands := GetCommands()
 	scanner := bufio.NewScanner(os.Stdin)
 	
 	for {
@@ -18,11 +19,19 @@ func main() {
 		input := scanner.Text()
 		clean := cleanInput(input)
 
-		if len(clean) == 0 { 
-			fmt.Print("No input recieved")
+		if len(clean) == 0 { continue }
+		
+		command, ok := commands[clean[0]]
+		if !ok { 
+			fmt.Println("Unknown command") 
 			continue
 		}
-		
+
+		err := command.callback()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
 	}
 }
 
