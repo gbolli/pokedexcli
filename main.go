@@ -4,13 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pokedexcli/internal/pokecache"
 	"strings"
+	"time"
 )
 
 func main() {
 
 	cfg := &config{}
 	commands := GetCommands()
+	pcache := pokecache.NewCache(time.Second *8)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -28,7 +31,7 @@ func main() {
 			continue
 		}
 
-		err := command.callback(cfg)
+		err := command.callback(cfg, &pcache)
 		if err != nil {
 			fmt.Println(err)
 			continue

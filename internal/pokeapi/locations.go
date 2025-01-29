@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"pokedexcli/internal/pokecache"
 )
 
 type locations struct {
@@ -17,7 +18,16 @@ type locations struct {
 	} `json:"results"`
 }
 
-func GetLocations(url string) locations {
+func GetLocations(url string, pcache *pokecache.Cache) locations {
+	cacheData, ok := pcache.Get(url)
+	if ok {
+		locationList := locations{}
+		err := json.Unmarshal(cacheData, &locationList)
+		if err != nil { log.Fatal(err) }
+
+		return locationList
+	}
+
 	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
