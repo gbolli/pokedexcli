@@ -4,16 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"pokedexcli/internal/pokecache"
+	"pokedexcli/internal/pokeapi"
 	"strings"
 	"time"
 )
 
 func main() {
 
-	cfg := &config{}
+	cfg := config{
+		client: pokeapi.NewClient(time.Second *8),
+	}
 	commands := GetCommands()
-	pcache := pokecache.NewCache(time.Second *8)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -31,7 +32,7 @@ func main() {
 			continue
 		}
 
-		err := command.callback(cfg, &pcache)
+		err := command.callback(&cfg)
 		if err != nil {
 			fmt.Println(err)
 			continue

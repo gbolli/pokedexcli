@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"pokedexcli/internal/pokecache"
 )
 
 type locations struct {
@@ -18,8 +17,8 @@ type locations struct {
 	} `json:"results"`
 }
 
-func GetLocations(url string, pcache *pokecache.Cache) locations {
-	cacheData, ok := pcache.Get(url)
+func (c *Client) GetLocations(url string) locations {
+	cacheData, ok := c.gameCache.Get(url)
 	if ok {
 		locationList := locations{}
 		err := json.Unmarshal(cacheData, &locationList)

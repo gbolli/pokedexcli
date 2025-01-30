@@ -3,23 +3,21 @@ package main
 import (
 	"fmt"
 	"os"
-	"pokedexcli/internal/pokeapi"
-	"pokedexcli/internal/pokecache"
 )
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, *pokecache.Cache) error
+	callback    func(*config) error
 }
 
-func commandExit(cfg *config, pcache *pokecache.Cache) error {
+func commandExit(cfg *config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(cfg *config, pcache *pokecache.Cache) error {
+func commandHelp(cfg *config) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println("")
@@ -30,7 +28,7 @@ func commandHelp(cfg *config, pcache *pokecache.Cache) error {
 	return nil
 }
 
-func commandMap(cfg *config, pcache *pokecache.Cache) error {
+func commandMap(cfg *config) error {
 	var next string
 	if cfg.next == nil {
 		next = "https://pokeapi.co/api/v2/location-area/"
@@ -38,7 +36,7 @@ func commandMap(cfg *config, pcache *pokecache.Cache) error {
 		next = *cfg.next
 	}
 
-	locationList := pokeapi.GetLocations(next, pcache)
+	locationList := cfg.client.GetLocations(next)
 
 	for _, location := range locationList.Results {
 		fmt.Println(location.Name)
@@ -50,13 +48,13 @@ func commandMap(cfg *config, pcache *pokecache.Cache) error {
 	return nil
 }
 
-func commandMapb(cfg *config, pcache *pokecache.Cache) error {
+func commandMapb(cfg *config) error {
 	if cfg.previous == nil {
 		fmt.Println("you're on the first page")
 		return nil
 	}
 
-	locationList := pokeapi.GetLocations(*cfg.previous, pcache)
+	locationList := cfg.client.GetLocations(*cfg.previous)
 	
 	for _, location := range locationList.Results {
 		fmt.Println(location.Name)
