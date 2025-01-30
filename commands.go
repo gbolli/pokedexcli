@@ -8,62 +8,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
-}
-
-func commandExit(cfg *config) error {
-	fmt.Println("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp(cfg *config) error {
-	fmt.Println("Welcome to the Pokedex!")
-	fmt.Println("Usage:")
-	fmt.Println("")
-
-	for _, command := range GetCommands() {
-		fmt.Printf("%s: %s\n", command.name, command.description)
-	}
-	return nil
-}
-
-func commandMap(cfg *config) error {
-	var next string
-	if cfg.next == nil {
-		next = "https://pokeapi.co/api/v2/location-area/"
-	} else {
-		next = *cfg.next
-	}
-
-	locationList := cfg.client.GetLocations(next)
-
-	for _, location := range locationList.Results {
-		fmt.Println(location.Name)
-	}
-
-	cfg.next = locationList.Next
-	cfg.previous = locationList.Previous
-
-	return nil
-}
-
-func commandMapb(cfg *config) error {
-	if cfg.previous == nil {
-		fmt.Println("you're on the first page")
-		return nil
-	}
-
-	locationList := cfg.client.GetLocations(*cfg.previous)
-	
-	for _, location := range locationList.Results {
-		fmt.Println(location.Name)
-	}
-
-	cfg.next = locationList.Next
-	cfg.previous = locationList.Previous
-
-	return nil
+	callback    func(*config, args ...string) error
 }
 
 func GetCommands() map[string]cliCommand {
