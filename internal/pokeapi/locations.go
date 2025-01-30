@@ -2,6 +2,8 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -17,19 +19,20 @@ type locations struct {
 	} `json:"results"`
 }
 
-func (c *Client) GetLocations(url string) locations {
+func (c *Client) GetLocations(url string) (locations, error) {
+	locationList := locations{}
+
 	cacheData, ok := c.gameCache.Get(url)
 	if ok {
-		locationList := locations{}
 		err := json.Unmarshal(cacheData, &locationList)
-		if err != nil { log.Fatal(err) }
+		if err != nil { return locationList, err }
 
-		return locationList
+		return locationList, nil
 	}
 
 	res, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		return locationList, err
 	}
 
 	defer res.Body.Close()
@@ -37,16 +40,18 @@ func (c *Client) GetLocations(url string) locations {
 	data, err := io.ReadAll(res.Body)
 
 	if res.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, data)
+		errText := fmt.Sprintf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, data)
+		resError := errors.New(errText)
+		return locationList, resError
 	}
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	locationList := locations{}
 	if err = json.Unmarshal(data, &locationList); err != nil {
-	    log.Fatal(err)
+	    return locationList, err
 	}
 
-	return locationList
+	return locationList, nil
 }

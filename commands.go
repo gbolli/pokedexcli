@@ -1,14 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config, args ...string) error
+	callback    func(*config, ...string) error
 }
 
 func GetCommands() map[string]cliCommand {
@@ -32,6 +27,11 @@ func GetCommands() map[string]cliCommand {
 			name:		"mapb",
 			description: "Displays the previous 20 locations in the Pokemon world",
 			callback:	commandMapb,
+		},
+		"explore": {
+			name:		"explore",
+			description: "Explore a location",
+			callback:	commandExplore,
 		},
 	}
 }

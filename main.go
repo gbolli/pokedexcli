@@ -26,13 +26,21 @@ func main() {
 
 		if len(clean) == 0 { continue }
 		
+		// command
 		command, ok := commands[clean[0]]
 		if !ok { 
 			fmt.Println("Unknown command") 
 			continue
 		}
 
-		err := command.callback(&cfg)
+		// arguments
+		args := []string{}
+		if len(clean) > 1 {
+			args = clean[1:]
+		}
+
+		// callback
+		err := command.callback(&cfg, args...)
 		if err != nil {
 			fmt.Println(err)
 			continue
