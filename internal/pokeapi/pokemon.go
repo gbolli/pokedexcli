@@ -8,21 +8,21 @@ import (
 	"net/http"
 )
 
-func (c *Client) GetLocation(url string) (location, error) {
-	locationDetails := location{}
+func (c *Client) GetPokemon(url string) (Pokemon, error) {
+	pokemonDetails := Pokemon{}
 
 	// Check cache
 	cacheData, ok := c.gameCache.Get(url)
 	if ok {
-		err := json.Unmarshal(cacheData, &locationDetails)
+		err := json.Unmarshal(cacheData, &pokemonDetails)
 		if err != nil { log.Fatal(err) }
 
-		return locationDetails, nil
+		return pokemonDetails, nil
 	}
 
 	res, err := http.Get(url)
 	if err != nil {
-		return locationDetails, err
+		return pokemonDetails, err
 	}
 
 	defer res.Body.Close()
@@ -30,18 +30,18 @@ func (c *Client) GetLocation(url string) (location, error) {
 	data, err := io.ReadAll(res.Body)
 
 	if res.StatusCode > 299 {
-		errText := "Can't find that location. Check spelling."
+		errText := "Can't find that pokemon. Check spelling."
 		resError := errors.New(errText)
-		return locationDetails, resError
+		return pokemonDetails, resError
 	}
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = json.Unmarshal(data, &locationDetails); err != nil {
+	if err = json.Unmarshal(data, &pokemonDetails); err != nil {
 	    log.Fatal(err)
 	}
 
-	return locationDetails, nil
+	return pokemonDetails, nil
 }

@@ -13,7 +13,9 @@ func main() {
 
 	cfg := config{
 		client: pokeapi.NewClient(time.Second *8),
+		pokedex: make(map[string]pokeapi.Pokemon),
 	}
+	
 	commands := GetCommands()
 	scanner := bufio.NewScanner(os.Stdin)
 
