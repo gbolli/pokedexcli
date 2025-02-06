@@ -53,3 +53,11 @@ func main() {
 func cleanInput(text string) []string {
 	return strings.Fields(strings.ToLower(text))
 }
+
+
+// ideas
+// 
+// - move to area
+// - can only catch pokemon that are in that area
+// - they disappear for a time after attemt?
+// - look at api for other ideas
